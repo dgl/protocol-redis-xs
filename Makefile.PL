@@ -34,6 +34,7 @@ WriteMakefile(
     'XSLoader' => 0,
     'XS::Object::Magic' => 0,
     'Protocol::Redis' => '0.9001',
+    parent => 0,
   },
 
   INC      => $dep{INC},
