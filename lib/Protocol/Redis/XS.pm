@@ -70,9 +70,11 @@ follows:
 
 Set callback for L</parse>.
 
-=head1 SEE ALSO
+=head1 SUPPORT
 
-L<Redis>, L<Redis::hiredis>, L<AnyEvent::Redis>, L<Protocol::Redis>.
+=head2 IRC
+
+L<irc://irc.perl.org/redis| #redis on irc.perl.org>.
 
 =head1 DEVELOPMENT
 
@@ -100,6 +102,10 @@ See http://dev.perl.org/licenses/ for more information.
 
 The hiredis library included in this distribution has a seperate license (3
 clause BSD). See F<hiredis/COPYING>.
+
+=head1 SEE ALSO
+
+L<Redis>, L<Redis::hiredis>, L<AnyEvent::Redis>, L<Protocol::Redis>.
 
 =cut
 

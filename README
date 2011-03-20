@@ -40,8 +40,9 @@ METHODS
   on_message
     Set callback for "parse".
 
-SEE ALSO
-    Redis, Redis::hiredis, AnyEvent::Redis, Protocol::Redis.
+SUPPORT
+  IRC
+    irc://irc.perl.org/redis.
 
 DEVELOPMENT
     See github: <https://github.com/dgl/protocol-redis-xs>.
@@ -66,4 +67,7 @@ COPYRIGHT AND LICENSE
 
     The hiredis library included in this distribution has a seperate license
     (3 clause BSD). See hiredis/COPYING.
+
+SEE ALSO
+    Redis, Redis::hiredis, AnyEvent::Redis, Protocol::Redis.
 
