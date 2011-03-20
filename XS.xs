@@ -55,7 +55,7 @@ static inline void storeParent(const redisReadTask *task, SV *reply)
 {
   if (task->parent) {
     SV *const obj = task->parent->obj;
-    HV *const parent = SvRV(obj);
+    HV *const parent = (HV*)SvRV(obj);
     SV **const data = hv_fetchs(parent, "data", FALSE);
     assert(data && SvTYPE(SvRV(*data)) == SVt_PVAV);
     av_store((AV*)SvRV(*data), task->idx, reply);
