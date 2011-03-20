@@ -5,8 +5,7 @@
 \bSCCS\b
 ,v$
 \B\.svn\b
-\B\.git\b
-\B\.gitignore\b
+\B\.git
 \b_darcs\b
 
 # Avoid Makemaker generated and utility files.
@@ -34,7 +33,8 @@
 #!end included /Users/dgl/.perl5/lib/perl5/ExtUtils/MANIFEST.SKIP
 
 .*\.o$
-.*\.c$
+^[^/]+\.c$
+^hiredis/(async|adapters|example|dict|test|Makefile)
 .*\.bs$
 .*\.gz$
 

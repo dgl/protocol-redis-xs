@@ -1,0 +1,60 @@
+NAME
+    Protocol::Redis::XS - hiredis based parser compatible with
+    Protocol::Redis
+
+SYNOPSIS
+      use Protocol::Redis::XS;
+      my $redis = Protocol::Redis::XS->new;
+      $redis->parse("+OK\r\n");
+      $redis->get_message;
+
+DESCRIPTION
+    This provides a fast parser for the Redis protocol using the code from
+    <http://github.com/antirez/hiredis|hiredis> and with API compatibility
+    with Protocol::Redis.
+
+    This is a low level parsing module, you probably want to look at the
+    modules mentioned in "SEE ALSO" first.
+
+METHODS
+    As per Protocol::Redis.
+
+  parse($string)
+    Parse a chunk of data (calls "on_message" callback if defined and a
+    complete message is received).
+
+  get_message
+    Return a message. This is a potentially nested data structure, for
+    example as follows:
+
+      {
+        type => '*',
+        data => [
+          {
+            type => '$',
+            data => 'hello'
+          }
+        ]
+      }
+
+  on_message
+    Set callback for "parse".
+
+SEE ALSO
+    Redis, Redis::hiredis, AnyEvent::Redis, Protocol::Redis.
+
+AUTHOR
+    David Leadbeater <dgl@dgl.cx>
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2011 David Leadbeater.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
+    The hiredis library included in this distribution has a seperate license
+    (3 clause BSD). See hiredis/COPYING.
+
