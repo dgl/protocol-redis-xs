@@ -78,6 +78,12 @@ L<Redis>, L<Redis::hiredis>, L<AnyEvent::Redis>, L<Protocol::Redis>.
 
 See github: L<https://github.com/dgl/protocol-redis-xs>.
 
+Developer note, hiredis is pulled in via a git submodule, run:
+
+ git submodule update --init
+
+to make the development version buildable.
+
 =head1 AUTHOR
 
 David Leadbeater <dgl@dgl.cx>

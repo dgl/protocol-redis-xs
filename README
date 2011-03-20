@@ -46,6 +46,12 @@ SEE ALSO
 DEVELOPMENT
     See github: <https://github.com/dgl/protocol-redis-xs>.
 
+    Developer note, hiredis is pulled in via a git submodule, run:
+
+     git submodule update --init
+
+    to make the development version buildable.
+
 AUTHOR
     David Leadbeater <dgl@dgl.cx>
 
