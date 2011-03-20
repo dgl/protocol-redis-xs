@@ -40,4 +40,10 @@ WriteMakefile(
   TYPEMAPS => $dep{TYPEMAPS},
   OBJECT   => "$my_xs $hiredis_obj",
   LDFROM   => "$my_xs " . join(" ", @hiredis_files),
+
+  META_MERGE => {
+    resources        => {
+      repository     => 'https://github.com/dgl/protocol-redis-xs',
+    }
+  }
 );

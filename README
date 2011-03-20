@@ -43,6 +43,9 @@ METHODS
 SEE ALSO
     Redis, Redis::hiredis, AnyEvent::Redis, Protocol::Redis.
 
+DEVELOPMENT
+    See github: <https://github.com/dgl/protocol-redis-xs>.
+
 AUTHOR
     David Leadbeater <dgl@dgl.cx>
 

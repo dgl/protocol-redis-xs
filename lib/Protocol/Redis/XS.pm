@@ -74,6 +74,10 @@ Set callback for L</parse>.
 
 L<Redis>, L<Redis::hiredis>, L<AnyEvent::Redis>, L<Protocol::Redis>.
 
+=head1 DEVELOPMENT
+
+See github: L<https://github.com/dgl/protocol-redis-xs>.
+
 =head1 AUTHOR
 
 David Leadbeater <dgl@dgl.cx>
