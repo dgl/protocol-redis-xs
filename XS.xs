@@ -54,18 +54,18 @@ static void freeReplyObjectSV(void *reply) {
 static inline void storeParent(const redisReadTask *task, SV *reply)
 {
   if (task->parent) {
-    HV *parent = (HV*)SvRV((SV*)task->parent->obj);
+    SV *const obj = task->parent->obj;
+    HV *const parent = SvRV(obj);
     SV **const data = hv_fetchs(parent, "data", FALSE);
     assert(data && SvTYPE(SvRV(*data)) == SVt_PVAV);
-    if(data)
-      av_store((AV*)SvRV(*data), task->idx, reply);
+    av_store((AV*)SvRV(*data), task->idx, reply);
   }
 }
 
 static void *createStringObjectSV(const redisReadTask *task, char *str,
   size_t len)
 {
-  SV *reply = createReply(newSVpvn(str, len), task->type);
+  SV *const reply = createReply(newSVpvn(str, len), task->type);
   storeParent(task, reply);
   return reply;
 }
@@ -73,8 +73,8 @@ static void *createStringObjectSV(const redisReadTask *task, char *str,
 static void *createArrayObjectSV(const redisReadTask *task, int elements)
 {
   AV *av = newAV();
+  SV *const reply = createReply(newRV_noinc((SV*)av), task->type);
   av_extend(av, elements);
-  SV *reply = createReply(newRV_noinc((SV*)av), task->type);
   storeParent(task, reply);
   return reply;
 }
