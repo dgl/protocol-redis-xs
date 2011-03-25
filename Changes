@@ -1,3 +1,7 @@
+0.03
+- Add tests for XS specific issues
+- Code cleanups
+
 0.02 25 March 2011
 - Fix error handling multiple messages in a single response
 
