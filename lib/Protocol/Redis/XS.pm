@@ -103,6 +103,9 @@ to make the development version buildable.
 
 David Leadbeater <dgl@dgl.cx>
 
+With thanks to Sergey Zasenko <undef@cpan.org> for the original
+L<Protocol::Redis> and defining the API.
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2011 David Leadbeater.
