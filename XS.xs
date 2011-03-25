@@ -1,3 +1,5 @@
+#define PERL_NO_GET_CONTEXT
+
 #include "hiredis.h"
 #include "EXTERN.h"
 #include "perl.h"
@@ -5,9 +7,24 @@
 #include "ppport.h"
 #include <xs_object_magic.h>
 
+#ifdef PERL_IMPLICIT_CONTEXT
+
+#define dREDISCTX(task)                     \
+  dTHXa(task->privdata);
+
+#define SET_REDIS_CTX(r)                    \
+  redisReplyReaderSetPrivdata(r, aTHX);
+
+#else
+
+#define dREDISCTX(task)
+#define SET_REDIS_CTX(r)
+
+#endif
+
 typedef void reply_reader_t;
 
-static SV *createReply(SV *sv, int type);
+static SV *createReply(pTHX_ SV *sv, int type);
 static void freeReplyObjectSV(void *reply);
 static void *createStringObjectSV(const redisReadTask *task, char *str,
   size_t len);
@@ -32,7 +49,7 @@ static const char redisTypes[] = {
   [REDIS_REPLY_ERROR]   = '-'
 };
 
-static SV *createReply(SV *sv, int type)
+static SV *createReply(pTHX_ SV *sv, int type)
 {
   char reply_type = redisTypes[type];
   HV *reply = newHV();
@@ -47,11 +64,12 @@ static SV *createReply(SV *sv, int type)
 }
 
 static void freeReplyObjectSV(void *reply) {
+  dTHX;
   SV* r = reply;
   sv_2mortal(r);
 }
 
-static inline void storeParent(const redisReadTask *task, SV *reply)
+static inline void storeParent(pTHX_ const redisReadTask *task, SV *reply)
 {
   if (task->parent) {
     SV *const obj = task->parent->obj;
@@ -65,22 +83,27 @@ static inline void storeParent(const redisReadTask *task, SV *reply)
 static void *createStringObjectSV(const redisReadTask *task, char *str,
   size_t len)
 {
-  SV *const reply = createReply(newSVpvn(str, len), task->type);
-  storeParent(task, reply);
+  dREDISCTX(task);
+
+  SV *const reply = createReply(aTHX_ newSVpvn(str, len), task->type);
+  storeParent(aTHX_ task, reply);
   return reply;
 }
 
 static void *createArrayObjectSV(const redisReadTask *task, int elements)
 {
+  dREDISCTX(task);
+
   AV *av = newAV();
-  SV *const reply = createReply(newRV_noinc((SV*)av), task->type);
+  SV *const reply = createReply(aTHX_ newRV_noinc((SV*)av), task->type);
   av_extend(av, elements);
-  storeParent(task, reply);
+  storeParent(aTHX_ task, reply);
   return reply;
 }
 
 static void *createIntegerObjectSV(const redisReadTask *task, long long value)
 {
+  dREDISCTX(task);
   /* Not pretty, but perl doesn't always have a sane way to store long long in
    * a SV.
    */
@@ -90,15 +113,17 @@ static void *createIntegerObjectSV(const redisReadTask *task, long long value)
   SV *sv = newSVnv(value);
 #endif
 
-  SV *reply = createReply(sv, task->type);
-  storeParent(task, reply);
+  SV *reply = createReply(aTHX_ sv, task->type);
+  storeParent(aTHX_ task, reply);
   return reply;
 }
 
 static void *createNilObjectSV(const redisReadTask *task)
 {
-  SV *reply = createReply(&PL_sv_undef, task->type);
-  storeParent(task, reply);
+  dREDISCTX(task);
+
+  SV *reply = createReply(aTHX_ &PL_sv_undef, task->type);
+  storeParent(aTHX_ task, reply);
   return reply;
 }
 
@@ -116,6 +141,7 @@ _create(SV *self)
       redisReplyReaderFree(r);
       croak("Unable to set reply object functions");
     }
+    SET_REDIS_CTX(r);
     xs_object_magic_attach_struct(aTHX_ SvRV(self), r);
 
 void

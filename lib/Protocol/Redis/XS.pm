@@ -83,6 +83,11 @@ follows:
 
 Set callback for L</parse>.
 
+=head1 THREADS
+
+This module will work on a threaded perl and will work with threads, however
+instances of Protcol::Redis should not be shared between threads.
+
 =head1 SUPPORT
 
 =head2 IRC
