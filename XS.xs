@@ -22,24 +22,6 @@
 
 #endif
 
-typedef void reply_reader_t;
-
-static SV *createReply(pTHX_ SV *sv, int type);
-static void freeReplyObjectSV(void *reply);
-static void *createStringObjectSV(const redisReadTask *task, char *str,
-  size_t len);
-static void *createArrayObjectSV(const redisReadTask *task, int elements);
-static void *createIntegerObjectSV(const redisReadTask *task, long long value);
-static void *createNilObjectSV(const redisReadTask *task);
-
-static redisReplyObjectFunctions perlRedisFunctions = {
-  createStringObjectSV,
-  createArrayObjectSV,
-  createIntegerObjectSV,
-  createNilObjectSV,
-  freeReplyObjectSV
-};
-
 static const char redisTypes[] = {
   [REDIS_REPLY_STRING]  = '$',
   [REDIS_REPLY_ARRAY]   = '*',
@@ -123,6 +105,18 @@ static void *createNilObjectSV(const redisReadTask *task)
   return reply;
 }
 
+/* Declarations below are used in the XS section */
+
+static redisReplyObjectFunctions perlRedisFunctions = {
+  createStringObjectSV,
+  createArrayObjectSV,
+  createIntegerObjectSV,
+  createNilObjectSV,
+  freeReplyObjectSV
+};
+
+typedef void reply_reader_t;
+
 MODULE = Protocol::Redis::XS  PACKAGE = Protocol::Redis::XS
 PROTOTYPES: ENABLE
 
@@ -156,9 +150,9 @@ parse(SV *self, SV *data)
 
     callback = hv_fetchs((HV*)SvRV(self), "_on_message_cb", FALSE);
     if (callback && SvOK(*callback)) {
+      /* There's a callback, do parsing now. */
       SV *reply;
       do {
-        /* There's a callback, do parsing now. */
         if(redisReplyReaderGetReply(r, (void**)&reply) == REDIS_ERR) {
           croak("%s", redisReplyReaderGetError(r));
         }
