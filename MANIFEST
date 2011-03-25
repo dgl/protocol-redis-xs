@@ -17,6 +17,7 @@ MANIFEST.SKIP
 ppport.h
 README
 t/redis.t
+t/xs.t
 TODO
 typemap
 XS.xs
