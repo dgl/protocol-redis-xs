@@ -13,7 +13,7 @@ XSLoader::load "Protocol::Redis::XS", $VERSION;
 sub new {
   my($class) = @_;
   my $self = bless {}, $class;
-  $self->create;
+  $self->_create;
 
   return $self;
 }

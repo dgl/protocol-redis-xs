@@ -106,7 +106,7 @@ MODULE = Protocol::Redis::XS  PACKAGE = Protocol::Redis::XS
 PROTOTYPES: ENABLE
 
 void
-create(SV *self)
+_create(SV *self)
   PREINIT:
     reply_reader_t *r;
   CODE:
