@@ -28,13 +28,14 @@ WriteMakefile(
 
   BUILD_REQUIRES => {
     'Test::More' => '0.88',
+    'Protocol::Redis' => '0.9001',
   },
 
   PREREQ_PM => {
     'XSLoader' => 0,
     'XS::Object::Magic' => 0,
     'Protocol::Redis' => '0.9001',
-    parent => 0,
+    'parent' => 0,
   },
 
   INC      => $dep{INC},
