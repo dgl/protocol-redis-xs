@@ -48,7 +48,7 @@ Protocol::Redis::XS - hiredis based parser compatible with Protocol::Redis
 =head1 DESCRIPTION
 
 This provides a fast parser for the Redis protocol using the code from
-L<http://github.com/antirez/hiredis|hiredis> and with API compatibility with
+L<hiredis|http://github.com/antirez/hiredis> and with API compatibility with
 L<Protocol::Redis>.
 
 (If you've found yourself here just looking to use Redis in Perl: This is a low

@@ -10,14 +10,15 @@ SYNOPSIS
 
 DESCRIPTION
     This provides a fast parser for the Redis protocol using the code from
-    <http://github.com/antirez/hiredis|hiredis> and with API compatibility
+    hiredis <http://github.com/antirez/hiredis> and with API compatibility
     with Protocol::Redis.
 
-    This is a low level parsing module, you probably want to look at the
-    modules mentioned in "SEE ALSO" first.
+    (If you've found yourself here just looking to use Redis in Perl: This
+    is a low level parsing module, you probably want to look at the modules
+    mentioned in "SEE ALSO" first.)
 
 METHODS
-    As per Protocol::Redis.
+    As per Protocol::Redis, API version 1.
 
   parse($string)
     Parse a chunk of data (calls "on_message" callback if defined and a
@@ -40,9 +41,14 @@ METHODS
   on_message
     Set callback for "parse".
 
+THREADS
+    This module will work on a threaded perl and will work with threads,
+    however instances of Protcol::Redis should not be shared between
+    threads.
+
 SUPPORT
   IRC
-    irc://irc.perl.org/redis.
+    #redis on irc.perl.org <irc://irc.perl.org/redis>
 
 DEVELOPMENT
     See github: <https://github.com/dgl/protocol-redis-xs>.
@@ -55,6 +61,9 @@ DEVELOPMENT
 
 AUTHOR
     David Leadbeater <dgl@dgl.cx>
+
+    With thanks to Sergey Zasenko <undef@cpan.org> for the original
+    Protocol::Redis and defining the API.
 
 COPYRIGHT AND LICENSE
     Copyright (C) 2011 David Leadbeater.
