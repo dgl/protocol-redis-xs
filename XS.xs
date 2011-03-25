@@ -157,26 +157,32 @@ parse(SV *self, SV *data)
     callback = hv_fetchs((HV*)SvRV(self), "_on_message_cb", FALSE);
     if (callback && SvOK(*callback)) {
       SV *reply;
-      /* There's a callback, do parsing now. */
-      if(redisReplyReaderGetReply(r, (void**)&reply) == REDIS_ERR) {
-        croak("%s", redisReplyReaderGetError(r));
-      }
+      do {
+        /* There's a callback, do parsing now. */
+        if(redisReplyReaderGetReply(r, (void**)&reply) == REDIS_ERR) {
+          croak("%s", redisReplyReaderGetError(r));
+        }
 
-      if (reply) {
-        /* Call the callback */
-        dSP;
-        ENTER;
-        SAVETMPS;
-        PUSHMARK(SP);
-        XPUSHs(self);
-        XPUSHs(reply);
-        PUTBACK;
+        if (reply) {
+          /* Call the callback */
+          dSP;
+          ENTER;
+          SAVETMPS;
+          PUSHMARK(SP);
+          XPUSHs(self);
+          XPUSHs(reply);
+          PUTBACK;
 
-        call_sv(*callback, G_DISCARD);
+          call_sv(*callback, G_DISCARD);
+          sv_2mortal(reply);
 
-        FREETMPS;
-        LEAVE;
-      }
+          /* May free reply; we still use the presence of a pointer in the loop
+           * condition below though.
+           */
+          FREETMPS;
+          LEAVE;
+        }
+      } while(reply != NULL);
     }
 
 SV*
