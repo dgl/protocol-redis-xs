@@ -18,6 +18,18 @@ sub new {
   return $self;
 }
 
+# See Protocol::Redis for description of the API versioning
+sub use_api {
+  my($self, $api_version) = @_;
+
+  return $api_version == 1;
+}
+
+sub on_message {
+  my($self, $cb) = @_;
+  $self->{_on_message_cb} = $cb;
+}
+
 1;
 
 __END__
@@ -39,12 +51,13 @@ This provides a fast parser for the Redis protocol using the code from
 L<http://github.com/antirez/hiredis|hiredis> and with API compatibility with
 L<Protocol::Redis>.
 
-This is a low level parsing module, you probably want to look at the modules
-mentioned in L</SEE ALSO> first.
+(If you've found yourself here just looking to use Redis in Perl: This is a low
+level parsing module, you probably want to look at the modules mentioned in
+L</SEE ALSO> first.)
 
 =head1 METHODS
 
-As per L<Protocol::Redis>.
+As per L<Protocol::Redis>, API version 1.
 
 =head2 parse($string)
 
@@ -74,7 +87,7 @@ Set callback for L</parse>.
 
 =head2 IRC
 
-L<irc://irc.perl.org/redis| #redis on irc.perl.org>.
+L<#redis on irc.perl.org|irc://irc.perl.org/redis>
 
 =head1 DEVELOPMENT
 
