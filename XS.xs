@@ -9,16 +9,16 @@
 
 #ifdef PERL_IMPLICIT_CONTEXT
 
-#define dREDISCTX(task)                     \
+#define dTHXREDIS(task)                     \
   dTHXa(task->privdata);
 
-#define SET_REDIS_CTX(r)                    \
+#define SET_THX_REDIS(r)                    \
   redisReplyReaderSetPrivdata(r, aTHX);
 
 #else
 
-#define dREDISCTX(task)
-#define SET_REDIS_CTX(r)
+#define dTHXREDIS(task)
+#define SET_THX_REDIS(r)
 
 #endif
 
@@ -79,7 +79,7 @@ static inline void storeParent(pTHX_ const redisReadTask *task, SV *reply)
 static void *createStringObjectSV(const redisReadTask *task, char *str,
   size_t len)
 {
-  dREDISCTX(task);
+  dTHXREDIS(task);
 
   SV *const reply = createReply(aTHX_ newSVpvn(str, len), task->type);
   storeParent(aTHX_ task, reply);
@@ -88,7 +88,7 @@ static void *createStringObjectSV(const redisReadTask *task, char *str,
 
 static void *createArrayObjectSV(const redisReadTask *task, int elements)
 {
-  dREDISCTX(task);
+  dTHXREDIS(task);
 
   AV *av = newAV();
   SV *const reply = createReply(aTHX_ newRV_noinc((SV*)av), task->type);
@@ -99,7 +99,7 @@ static void *createArrayObjectSV(const redisReadTask *task, int elements)
 
 static void *createIntegerObjectSV(const redisReadTask *task, long long value)
 {
-  dREDISCTX(task);
+  dTHXREDIS(task);
   /* Not pretty, but perl doesn't always have a sane way to store long long in
    * a SV.
    */
@@ -116,7 +116,7 @@ static void *createIntegerObjectSV(const redisReadTask *task, long long value)
 
 static void *createNilObjectSV(const redisReadTask *task)
 {
-  dREDISCTX(task);
+  dTHXREDIS(task);
 
   SV *reply = createReply(aTHX_ &PL_sv_undef, task->type);
   storeParent(aTHX_ task, reply);
@@ -137,7 +137,7 @@ _create(SV *self)
       redisReplyReaderFree(r);
       croak("Unable to set reply object functions");
     }
-    SET_REDIS_CTX(r);
+    SET_THX_REDIS(r);
     xs_object_magic_attach_struct(aTHX_ SvRV(self), r);
 
 void
