@@ -44,7 +44,7 @@ static const char redisTypes[] = {
   [REDIS_REPLY_STRING]  = '$',
   [REDIS_REPLY_ARRAY]   = '*',
   [REDIS_REPLY_INTEGER] = ':',
-  [REDIS_REPLY_NIL]     = '\0',
+  [REDIS_REPLY_NIL]     = '$',
   [REDIS_REPLY_STATUS]  = '+',
   [REDIS_REPLY_ERROR]   = '-'
 };
@@ -54,12 +54,8 @@ static SV *createReply(pTHX_ SV *sv, int type)
   char reply_type = redisTypes[type];
   HV *reply = newHV();
 
-  hv_stores(reply, "type", reply_type
-    ? newSVpvn(&reply_type, sizeof reply_type)
-    : &PL_sv_undef);
-
+  hv_stores(reply, "type", newSVpvn(&reply_type, sizeof reply_type));
   hv_stores(reply, "data", sv);
-
   return newRV_noinc((SV*)reply);
 }
 
