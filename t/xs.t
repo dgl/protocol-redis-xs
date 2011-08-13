@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 3;
 
 use Protocol::Redis::XS;
-my $redis = new_ok 'Protocol::Redis::XS';
+my $redis = new_ok 'Protocol::Redis::XS', [api => 1];
 
 $redis->on_message([]);
 eval { $redis->parse("+OK\r\n") };
