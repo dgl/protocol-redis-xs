@@ -12,8 +12,13 @@ XSLoader::load "Protocol::Redis::XS", $VERSION;
 
 sub new {
   my($class, %args) = @_;
+
+  my $on_message = delete $args{on_message};
+
   my $self = bless \%args, $class;
   return unless $self->api == 1;
+  $self->on_message($on_message) if defined $on_message;
+
   $self->_create;
 
   return $self;
