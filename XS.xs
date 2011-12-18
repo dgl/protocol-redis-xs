@@ -170,12 +170,16 @@ static SV *encodeMessage(pTHX_ SV *message_p) {
   if (1 != strlen(type) || NULL == strchr("+-:$*", op)) 
     croak("Unknown message type: \"%s\"", type);
 
-  if ('+' == op || '-' == op || ':' == op)
-    return encodeString(aTHX_ message_p);
-  else if ('$' == op)
-    return encodeBulk(aTHX_ message_p);
-  else if ('*' == op)
-    return encodeMultiBulk(aTHX_ message_p);
+  switch (op) {
+    case '+':
+    case '-':
+    case ':':
+      return encodeString(aTHX_ message_p);
+    case '$':
+      return encodeBulk(aTHX_ message_p);
+    case '*':
+      return encodeMultiBulk(aTHX_ message_p);
+  }
 }
 
 typedef void reply_reader_t;
