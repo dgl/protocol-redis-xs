@@ -1,1 +1,1 @@
-reply_reader_t *  T_PTROBJ_MG
+redisReader *  T_PTROBJ_MG

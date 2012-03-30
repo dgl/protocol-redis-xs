@@ -13,7 +13,7 @@
   dTHXa(task->privdata);
 
 #define SET_THX_REDIS(r)                    \
-  redisReplyReaderSetPrivdata(r, aTHX);
+  do { r->privdata = aTHX; } while(0)
 
 #else
 
@@ -182,46 +182,40 @@ static SV *encodeMessage(pTHX_ SV *message_p) {
   }
 }
 
-typedef void reply_reader_t;
-
 MODULE = Protocol::Redis::XS  PACKAGE = Protocol::Redis::XS
 PROTOTYPES: ENABLE
 
 void
 _create(SV *self)
   PREINIT:
-    reply_reader_t *r;
+    redisReader *r;
   CODE:
-    r = redisReplyReaderCreate();
-    if(redisReplyReaderSetReplyObjectFunctions(r, &perlRedisFunctions)
-        != REDIS_OK) {
-      redisReplyReaderFree(r);
-      croak("Unable to set reply object functions");
-    }
+    r = redisReaderCreate();
+    r->fn = &perlRedisFunctions;
     SET_THX_REDIS(r);
     xs_object_magic_attach_struct(aTHX_ SvRV(self), r);
 
 void
-DESTROY(reply_reader_t *r)
+DESTROY(redisReader *r)
   CODE:
-    redisReplyReaderFree(r);
+    redisReaderFree(r);
 
 void
 parse(SV *self, SV *data)
   PREINIT:
-    void *r;
+    redisReader *r;
     SV **callback;
   CODE:
     r = xs_object_magic_get_struct(aTHX_ SvRV(self));
-    redisReplyReaderFeed(r, SvPVX(data), SvCUR(data));
+    redisReaderFeed(r, SvPVX(data), SvCUR(data));
 
     callback = hv_fetchs((HV*)SvRV(self), "_on_message_cb", FALSE);
     if (callback && SvOK(*callback)) {
       /* There's a callback, do parsing now. */
       SV *reply;
       do {
-        if(redisReplyReaderGetReply(r, (void**)&reply) == REDIS_ERR) {
-          croak("%s", redisReplyReaderGetError(r));
+        if(redisReaderGetReply(r, (void**)&reply) == REDIS_ERR) {
+          croak("%s", r->errstr);
         }
 
         if (reply) {
@@ -247,10 +241,10 @@ parse(SV *self, SV *data)
     }
 
 SV*
-get_message(reply_reader_t *r)
+get_message(redisReader *r)
   CODE:
-    if(redisReplyReaderGetReply(r, (void**)&RETVAL) == REDIS_ERR) {
-      croak("%s", redisReplyReaderGetError(r));
+    if(redisReaderGetReply(r, (void**)&RETVAL) == REDIS_ERR) {
+      croak("%s", r->errstr);
     }
     if(!RETVAL)
       RETVAL = &PL_sv_undef;
