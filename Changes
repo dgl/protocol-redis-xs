@@ -1,3 +1,7 @@
+0.05
+- Encode using XS implementation (und3f)
+- Update hiredis version
+
 0.04
 - Up to API version 1
 
