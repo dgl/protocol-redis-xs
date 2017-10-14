@@ -1,6 +1,7 @@
 #define PERL_NO_GET_CONTEXT
 
 #include "hiredis.h"
+#include "read.h"
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"

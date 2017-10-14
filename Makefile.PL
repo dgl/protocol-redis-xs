@@ -10,7 +10,7 @@ my %dep = $pkg->get_makefile_vars;
 # Workaround bugs in the toolchain so we can actually build things in
 # directories.
 my $my_xs = q[XS$(OBJ_EXT)];
-my @hiredis_files = map "$_\$(OBJ_EXT)", qw(hiredis sds net);
+my @hiredis_files = map "$_\$(OBJ_EXT)", qw(hiredis sds net read);
 my $hiredis_obj = join " ", map 'hiredis/' . $_, @hiredis_files;
 
 WriteMakefile(
