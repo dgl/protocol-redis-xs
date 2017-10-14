@@ -135,10 +135,25 @@ static SV *encodeBulk(pTHX_ SV *message_p) {
   if (!SvOK(*data_sv))
     return newSVpvf("$-1\r\n");
 
-  STRLEN len;
-  char *data = SvPV(*data_sv, len);
+  STRLEN msglen;
 
-  return newSVpvf("$%u\r\n%s\r\n", len, data);
+  char *data = SvPV(*data_sv, msglen);
+  const char term[] = "\r\n";
+  char initmsg[32];
+
+  STRLEN initlen = sprintf( initmsg, "$%lu\r\n", msglen );
+
+  SV* resp_sv = newSV(initlen + msglen + sizeof(term)-1);
+  SvPOK_on(resp_sv);
+  char *buildstr = SvPVX(resp_sv);
+
+  Copy(initmsg, buildstr,                    initlen,        char);
+  Copy(data,    buildstr + initlen,          msglen,         char);
+  Copy(term,    buildstr + initlen + msglen, sizeof(term)-1, char);
+
+  SvCUR_set(resp_sv, initlen + msglen + sizeof(term)-1);
+
+  return resp_sv;
 };
 
 static SV *encodeMultiBulk (pTHX_ SV *message_p) {
@@ -150,7 +165,7 @@ static SV *encodeMultiBulk (pTHX_ SV *message_p) {
 
   AV *const data = (AV*)SvRV(*data_sv);
   I32 len = av_len(data);
-  SV *r = newSVpvf("*%ld\r\n", len+1);
+  SV *r = newSVpvf("*%d\r\n", len+1);
 
   I32 i;
   for (i = 0; i <= len; i++) {
