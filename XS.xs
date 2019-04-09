@@ -1,11 +1,11 @@
 #define PERL_NO_GET_CONTEXT
 
-#include "hiredis.h"
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 #include "ppport.h"
 #include <xs_object_magic.h>
+#include <hiredis.h>
 
 #ifdef PERL_IMPLICIT_CONTEXT
 
