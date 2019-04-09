@@ -104,12 +104,6 @@ L<#redis on irc.perl.org|irc://irc.perl.org/redis>
 
 See github: L<https://github.com/dgl/protocol-redis-xs>.
 
-Developer note, hiredis is pulled in via a git submodule, run:
-
- git submodule update --init
-
-to make the development version buildable.
-
 =head1 AUTHOR
 
 David Leadbeater <dgl@dgl.cx>
@@ -126,9 +120,6 @@ the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
-
-The hiredis library included in this distribution has a seperate license (3
-clause BSD). See F<hiredis/COPYING>.
 
 =head1 SEE ALSO
 

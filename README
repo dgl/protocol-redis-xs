@@ -53,12 +53,6 @@ SUPPORT
 DEVELOPMENT
     See github: <https://github.com/dgl/protocol-redis-xs>.
 
-    Developer note, hiredis is pulled in via a git submodule, run:
-
-     git submodule update --init
-
-    to make the development version buildable.
-
 AUTHOR
     David Leadbeater <dgl@dgl.cx>
 
@@ -73,9 +67,6 @@ COPYRIGHT AND LICENSE
     by the Free Software Foundation; or the Artistic License.
 
     See http://dev.perl.org/licenses/ for more information.
-
-    The hiredis library included in this distribution has a seperate license
-    (3 clause BSD). See hiredis/COPYING.
 
 SEE ALSO
     Redis, Redis::hiredis, AnyEvent::Redis, Protocol::Redis.
