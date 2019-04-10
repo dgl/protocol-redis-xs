@@ -13,10 +13,10 @@ my $my_xs = q[XS$(OBJ_EXT)];
 my @hiredis_files = map "$_\$(OBJ_EXT)", qw(hiredis sds net);
 my $hiredis_obj = join " ", map 'hiredis/' . $_, @hiredis_files;
 
-WriteMakefile(
+my %WriteMakefile_args = (
   NAME          => 'Protocol::Redis::XS',
   AUTHOR        => 'David Leadbeater <dgl@dgl.cx>',
-  LICENSE       => 'perl',
+  LICENSE       => 'perl_5',
   ABSTRACT_FROM => 'lib/Protocol/Redis/XS.pm',
   VERSION_FROM  => 'lib/Protocol/Redis/XS.pm',
 
@@ -26,9 +26,9 @@ WriteMakefile(
     'XS::Object::Magic' => 0,
   },
 
-  BUILD_REQUIRES => {
+  TEST_REQUIRES => {
     'Test::More' => '0.88',
-    'Protocol::Redis' => '0.9001',
+    'Protocol::Redis::Test' => 0,
   },
 
   PREREQ_PM => {
@@ -44,8 +44,28 @@ WriteMakefile(
   LDFROM   => "$my_xs " . join(" ", @hiredis_files),
 
   META_MERGE => {
-    resources        => {
-      repository     => 'https://github.com/dgl/protocol-redis-xs',
-    }
-  }
+    'meta-spec'    => { version => 2 },
+    resources      => {
+      repository   => {
+        type       => 'git',
+        url        => 'https://github.com/dgl/protocol-redis-xs.git',
+        web        => 'https://github.com/dgl/protocol-redis-xs',
+      },
+      bugtracker   => { web => 'https://github.com/dgl/protocol-redis-xs/issues' },
+      x_IRC        => 'irc://irc.perl.org/#redis',
+    },
+    x_contributors => [
+      'Mike Magowan <mike@magowan.co.uk>',
+      'Sergey Zasenko <d3fin3@gmail.com>',
+    ],
+  },
 );
+
+delete $WriteMakefile_args{META_MERGE}
+  unless eval { ExtUtils::MakeMaker->VERSION('6.46') };
+unless (eval { ExtUtils::MakeMaker->VERSION('6.64') }) {
+  my $test_requires = delete $WriteMakefile_args{TEST_REQUIRES};
+  $WriteMakefile_args{PREREQ_PM}{$_} = $test_requires->{$_} for keys %$test_requires;
+}
+
+WriteMakefile(%WriteMakefile_args);
