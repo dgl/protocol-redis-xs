@@ -49,6 +49,7 @@ my %WriteMakefile_args = (
       x_IRC        => 'irc://irc.perl.org/#redis',
     },
     x_contributors => [
+      'Dan Book <grinnz@grinnz.com>',
       'Mike Magowan <mike@magowan.co.uk>',
       'Sergey Zasenko <d3fin3@gmail.com>',
     ],
