@@ -1,3 +1,7 @@
+0.06
+- Fix encoding binary data with null characters (mikemagowan)
+- Use Alien::hiredis to provide the hiredis library (Grinnz)
+
 0.05
 - Encode using XS implementation (und3f)
 - Update hiredis version
