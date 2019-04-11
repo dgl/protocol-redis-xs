@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use 5.008001;
 use ExtUtils::MakeMaker 6.31;
 use ExtUtils::Depends;
 
@@ -11,6 +12,8 @@ my %WriteMakefile_args = (
   LICENSE       => 'perl_5',
   ABSTRACT_FROM => 'lib/Protocol/Redis/XS.pm',
   VERSION_FROM  => 'lib/Protocol/Redis/XS.pm',
+
+  MIN_PERL_VERSION => '5.008001',
 
   CONFIGURE_REQUIRES => {
     'ExtUtils::MakeMaker' => '6.31',
@@ -54,6 +57,8 @@ my %WriteMakefile_args = (
 
 delete $WriteMakefile_args{META_MERGE}
   unless eval { ExtUtils::MakeMaker->VERSION('6.46') };
+delete $WriteMakefile_args{MIN_PERL_VERSION}
+  unless eval { ExtUtils::MakeMaker->VERSION('6.48') };
 unless (eval { ExtUtils::MakeMaker->VERSION('6.64') }) {
   my $test_requires = delete $WriteMakefile_args{TEST_REQUIRES};
   $WriteMakefile_args{PREREQ_PM}{$_} = $test_requires->{$_} for keys %$test_requires;
