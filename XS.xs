@@ -31,6 +31,11 @@ static const char redisTypes[] = {
   [REDIS_REPLY_NIL]     = '$',
   [REDIS_REPLY_STATUS]  = '+',
   [REDIS_REPLY_ERROR]   = '-'
+#if HIREDIS_MAJOR > 0
+  ,
+  [REDIS_REPLY_DOUBLE]  = ',',
+  [REDIS_REPLY_BOOL]    = '#'
+#endif
 };
 
 static SV *createReply(pTHX_ SV *sv, int type)
@@ -70,7 +75,11 @@ static void *createStringObjectSV(const redisReadTask *task, char *str,
   return reply;
 }
 
+#if HIREDIS_MAJOR > 0
+static void *createArrayObjectSV(const redisReadTask *task, size_t elements)
+#else
 static void *createArrayObjectSV(const redisReadTask *task, int elements)
+#endif
 {
   dTHXREDIS(task);
 
@@ -98,6 +107,20 @@ static void *createIntegerObjectSV(const redisReadTask *task, long long value)
   return reply;
 }
 
+#if HIREDIS_MAJOR > 0
+static void *createDoubleObjectSV(const redisReadTask *task, double value,
+  char* str, size_t len)
+{
+  dTHXREDIS(task);
+
+  SV *sv = newSVpvn(str, len);
+  sv_setnv(sv, value);
+  SV *const reply = createReply(aTHX_ sv, task->type);
+  storeParent(aTHX_ task, reply);
+  return reply;
+}
+#endif
+
 static void *createNilObjectSV(const redisReadTask *task)
 {
   dTHXREDIS(task);
@@ -107,13 +130,31 @@ static void *createNilObjectSV(const redisReadTask *task)
   return reply;
 }
 
+#if HIREDIS_MAJOR > 0
+static void *createBoolObjectSV(const redisReadTask *task, int value)
+{
+  dTHXREDIS(task);
+  SV *sv = newSViv(value);
+
+  SV *reply = createReply(aTHX_ sv, task->type);
+  storeParent(aTHX_ task, reply);
+  return reply;
+}
+#endif
+
 /* Declarations below are used in the XS section */
 
 static redisReplyObjectFunctions perlRedisFunctions = {
   createStringObjectSV,
   createArrayObjectSV,
   createIntegerObjectSV,
+#if HIREDIS_MAJOR > 0
+  createDoubleObjectSV,
+#endif
   createNilObjectSV,
+#if HIREDIS_MAJOR > 0
+  createBoolObjectSV,
+#endif
   freeReplyObjectSV
 };
 
