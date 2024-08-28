@@ -128,7 +128,7 @@ static SV *encodeString(pTHX_ SV *message_p) {
   char *data = SvPV_nolen(*data_sv);
 
   return newSVpvf("%s%s\r\n", type, data);
-};
+}
 
 static SV *encodeBulk(pTHX_ SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
@@ -156,7 +156,7 @@ static SV *encodeBulk(pTHX_ SV *message_p) {
   SvCUR_set(resp_sv, initlen + msglen + sizeof(term)-1);
 
   return resp_sv;
-};
+}
 
 static SV *encodeMultiBulk (pTHX_ SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
@@ -172,7 +172,7 @@ static SV *encodeMultiBulk (pTHX_ SV *message_p) {
   I32 i;
   for (i = 0; i <= len; i++) {
     sv_catsv(r, encodeMessage(aTHX_ *av_fetch(data, i, FALSE)));
-  };
+  }
 
   return r;
 }
