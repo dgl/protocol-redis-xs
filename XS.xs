@@ -171,7 +171,9 @@ static SV *encodeMultiBulk (pTHX_ SV *message_p) {
 
   I32 i;
   for (i = 0; i <= len; i++) {
-    sv_catsv(r, encodeMessage(aTHX_ *av_fetch(data, i, FALSE)));
+    SV *t = encodeMessage(aTHX_ *av_fetch(data, i, FALSE));
+    sv_catsv(r, t);
+    SvREFCNT_dec(t);
   }
 
   return r;
