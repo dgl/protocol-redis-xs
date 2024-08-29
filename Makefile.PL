@@ -39,6 +39,13 @@ my %WriteMakefile_args = (
 
   META_MERGE => {
     'meta-spec'    => { version => 2 },
+    prereqs        => {
+      develop      => {
+        requires   => {
+          'Devel::Gladiator' => 0,
+        },
+      },
+    },
     resources      => {
       repository   => {
         type       => 'git',
