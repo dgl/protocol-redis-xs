@@ -117,9 +117,9 @@ static redisReplyObjectFunctions perlRedisFunctions = {
   freeReplyObjectSV
 };
 
-static SV *encodeMessage(pTHX_ SV *message_p);
+static void encodeMessage(pTHX_ SV *target, SV *message_p);
 
-static SV *encodeString(pTHX_ SV *message_p) {
+static void encodeString(pTHX_ SV *target, SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
   SV **const type_sv = hv_fetchs(message, "type", FALSE);
   SV **const data_sv = hv_fetchs(message, "data", FALSE);
@@ -127,15 +127,17 @@ static SV *encodeString(pTHX_ SV *message_p) {
   char *type = SvPV_nolen(*type_sv);
   char *data = SvPV_nolen(*data_sv);
 
-  return newSVpvf("%s%s\r\n", type, data);
+  sv_catpvf(target, "%s%s\r\n", type, data);
 }
 
-static SV *encodeBulk(pTHX_ SV *message_p) {
+static void encodeBulk(pTHX_ SV *target, SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
   SV **const data_sv = hv_fetchs(message, "data", FALSE);
 
-  if (!SvOK(*data_sv))
-    return newSVpvf("$-1\r\n");
+  if (!SvOK(*data_sv)) {
+    sv_catpv(target, "$-1\r\n");
+    return;
+  }
 
   STRLEN msglen;
 
@@ -145,59 +147,56 @@ static SV *encodeBulk(pTHX_ SV *message_p) {
 
   STRLEN initlen = sprintf( initmsg, "$%lu\r\n", msglen );
 
-  SV* resp_sv = newSV(initlen + msglen + sizeof(term)-1);
-  SvPOK_on(resp_sv);
-  char *buildstr = SvPVX(resp_sv);
+  STRLEN targlen = sv_len(target);
+  SvGROW(target, targlen + initlen + msglen + sizeof(term)-1 + 1);
 
-  Copy(initmsg, buildstr,                    initlen,        char);
-  Copy(data,    buildstr + initlen,          msglen,         char);
-  Copy(term,    buildstr + initlen + msglen, sizeof(term)-1, char);
-
-  SvCUR_set(resp_sv, initlen + msglen + sizeof(term)-1);
-
-  return resp_sv;
+  sv_catpvn(target, initmsg, initlen);
+  sv_catpvn(target, data,    msglen);
+  sv_catpvn(target, term,    sizeof(term)-1);
 }
 
-static SV *encodeMultiBulk (pTHX_ SV *message_p) {
+static void encodeMultiBulk (pTHX_ SV *target, SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
   SV **const data_sv = hv_fetchs(message, "data", FALSE);
 
-  if (!SvOK(*data_sv))
-    return newSVpv("*-1\r\n", 0);
+  if (!SvOK(*data_sv)) {
+    sv_catpv(target, "*-1\r\n");
+    return;
+  }
 
   AV *const data = (AV*)SvRV(*data_sv);
   I32 len = av_len(data);
-  SV *r = newSVpvf("*%d\r\n", len+1);
+  sv_catpvf(target, "*%d\r\n", len+1);
 
   I32 i;
   for (i = 0; i <= len; i++) {
-    SV *t = encodeMessage(aTHX_ *av_fetch(data, i, FALSE));
-    sv_catsv(r, t);
-    SvREFCNT_dec(t);
+    encodeMessage(aTHX_ target, *av_fetch(data, i, FALSE));
   }
-
-  return r;
 }
 
-static SV *encodeMessage(pTHX_ SV *message_p) {
+static void encodeMessage(pTHX_ SV *target, SV *message_p) {
   HV *const message = (HV*)SvRV(message_p);
   SV **const type_sv = hv_fetchs(message, "type", FALSE);
 
-  char *type = SvPV_nolen(*type_sv);
+  STRLEN type_len;
+  char *type = SvPV(*type_sv, type_len);
   const char op = type[0];
 
-  if (1 != strlen(type) || NULL == strchr("+-:$*", op)) 
+  if (1 != type_len || op == '\0' || NULL == strchr("+-:$*", op))
     croak("Unknown message type: \"%s\"", type);
 
   switch (op) {
     case '+':
     case '-':
     case ':':
-      return encodeString(aTHX_ message_p);
+      encodeString(aTHX_ target, message_p);
+      return;
     case '$':
-      return encodeBulk(aTHX_ message_p);
+      encodeBulk(aTHX_ target, message_p);
+      return;
     case '*':
-      return encodeMultiBulk(aTHX_ message_p);
+      encodeMultiBulk(aTHX_ target, message_p);
+      return;
   }
 }
 
@@ -274,6 +273,7 @@ get_message(redisReader *r)
 SV*
 encode(SV *self, SV *message)
   CODE:
-    RETVAL = encodeMessage(aTHX_ message);
+    RETVAL = newSVpvn("", 0);
+    encodeMessage(aTHX_ RETVAL, message);
   OUTPUT:
     RETVAL
