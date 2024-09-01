@@ -316,7 +316,8 @@ get_message(redisReader *r)
 SV*
 encode(SV *self, SV *message)
   CODE:
-    RETVAL = newSVpvn("", 0);
+    RETVAL = sv_2mortal(newSVpvn("", 0));
     encodeMessage(aTHX_ RETVAL, message);
+    SvREFCNT_inc(RETVAL);
   OUTPUT:
     RETVAL
