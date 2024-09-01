@@ -16,7 +16,7 @@ sub new {
   my $on_message = delete $args{on_message};
 
   my $self = bless \%args, $class;
-  return unless $self->api == 1;
+  return undef unless $self->api == 1;
   $self->on_message($on_message) if defined $on_message;
 
   $self->_create;
