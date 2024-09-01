@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use if !$ENV{AUTHOR_TESTING}, 'Test::More', skip_all => 'Author side testing only';
 use Test::More;
 use Protocol::Redis::XS;
 use Devel::Gladiator 'walk_arena';
