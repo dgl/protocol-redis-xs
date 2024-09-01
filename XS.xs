@@ -114,7 +114,9 @@ static void *createDoubleObjectSV(const redisReadTask *task, double value,
   dTHXREDIS(task);
 
   SV *sv = newSVpvn(str, len);
-  sv_setnv(sv, value);
+  SvUPGRADE(sv, SVt_PVNV);
+  SvNV_set(sv, value);
+  SvNOK_on(sv);
   SV *const reply = createReply(aTHX_ sv, task->type);
   storeParent(aTHX_ task, reply);
   return reply;
