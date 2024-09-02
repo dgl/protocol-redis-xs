@@ -1,4 +1,4 @@
-0.08
+0.08 - 2024-09-01
 - Fix memory leak in encodeMultiBulk (mauke)
 - Fix memory leak when encoding bad data (mauke)
 - Optimize encoding by writing the message to a single SV (mauke)
