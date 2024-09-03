@@ -15,9 +15,10 @@ sub new {
 
   my $on_message = delete $args{on_message};
 
+  Carp::croak(qq/Unknown Protocol::Redis API version $args{api}/)
+    unless defined $args{api} and $args{api} == 1;
+
   my $self = bless \%args, $class;
-  Carp::croak(qq/Unknown Protocol::Redis API version $self->{api}/)
-    unless $self->api == 1;
   $self->on_message($on_message) if defined $on_message;
 
   $self->_create;
