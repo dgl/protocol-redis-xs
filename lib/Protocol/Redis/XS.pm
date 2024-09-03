@@ -6,7 +6,7 @@ use parent "Protocol::Redis";
 use XS::Object::Magic;
 use XSLoader;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 XSLoader::load "Protocol::Redis::XS", $VERSION;
 
